@@ -49,7 +49,7 @@ public class Webapp {
         ctx.addServletMapping("/", "Embedded");
         */
 
-        tomcat.addWebapp("/.", new File(docBase).getAbsolutePath());
+        tomcat.addWebapp("", new File(docBase).getAbsolutePath());
         tomcat.start();
         tomcat.getServer().await();
     }
