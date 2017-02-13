@@ -9,47 +9,44 @@ import java.io.IOException;
 import java.io.Writer;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
+import org.apache.catalina.WebResourceRoot;
+import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.catalina.webresources.DirResourceSet;
+import org.apache.catalina.webresources.StandardRoot;
 
 public class Webapp {
     public static void main(String[] args) throws LifecycleException,
             InterruptedException, ServletException {
-
+        /*
         String docBase = "src/main/webapp/";
+        String contextPath = "";
+        String appBase = "src/main/webapp";
         Tomcat tomcat = new Tomcat();
         tomcat.setPort(8082);
-        /*
-        Context ctx = tomcat.addContext("/", new File(".").getAbsolutePath());
+        //tomcat.getHost().setAppBase(appBase);
+        tomcat.addWebapp(contextPath, new File(appBase).getAbsolutePath());
 
-        Tomcat.addServlet(ctx, "Embedded", new HttpServlet() {
-            @Override
-            protected void service(HttpServletRequest req, HttpServletResponse resp)
-                    throws ServletException, IOException {
-
-                Writer w = resp.getWriter();
-                w.write("Embedded.\n");
-                w.flush();
-                w.close();
-            }
-        });
-
-        Tomcat.addServlet(ctx, "Hello", new HttpServlet() {
-            @Override
-            protected void service(HttpServletRequest req, HttpServletResponse resp)
-                    throws ServletException, IOException {
-
-                Writer w = resp.getWriter();
-                w.write("Hello.\n");
-                w.flush();
-                w.close();
-            }
-        });
-
-        ctx.addServletMapping("/hellox", "Hello");
-        ctx.addServletMapping("/", "Embedded");
+        //tomcat.addWebapp("", new File(docBase).getAbsolutePath());
+        tomcat.start();
+        tomcat.getServer().await();
         */
 
-        tomcat.addWebapp("", new File(docBase).getAbsolutePath());
+        String webappDirLocation = "src/main/webapp/";
+        Tomcat tomcat = new Tomcat();
+        tomcat.setPort(8080);
+
+        StandardContext ctx = (StandardContext) tomcat.addWebapp("/", new File(webappDirLocation).getAbsolutePath());
+        System.out.println("configuring app with basedir: " + new File("./" + webappDirLocation).getAbsolutePath());
+
+        File additionWebInfClasses = new File("target/classes");
+        WebResourceRoot resources = new StandardRoot(ctx);
+        resources.addPreResources(new DirResourceSet(resources, "/WEB-INF/classes",
+                additionWebInfClasses.getAbsolutePath(), "/"));
+        ctx.setResources(resources);
+
+        User admin = new User("admin", "pass");
+
         tomcat.start();
         tomcat.getServer().await();
     }
