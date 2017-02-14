@@ -7,6 +7,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+
+import io.muic.ooc.webapp.service.SecurityService;
+import io.muic.ooc.webapp.util.Encryption;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.WebResourceRoot;
@@ -18,36 +23,23 @@ import org.apache.catalina.webresources.StandardRoot;
 public class Webapp {
     public static void main(String[] args) throws LifecycleException,
             InterruptedException, ServletException {
-        /*
+
         String docBase = "src/main/webapp/";
-        String contextPath = "";
-        String appBase = "src/main/webapp";
-        Tomcat tomcat = new Tomcat();
-        tomcat.setPort(8082);
-        //tomcat.getHost().setAppBase(appBase);
-        tomcat.addWebapp(contextPath, new File(appBase).getAbsolutePath());
-
-        //tomcat.addWebapp("", new File(docBase).getAbsolutePath());
-        tomcat.start();
-        tomcat.getServer().await();
-        */
-
-        String webappDirLocation = "src/main/webapp/";
         Tomcat tomcat = new Tomcat();
         tomcat.setPort(8080);
+        SecurityService securityService = new SecurityService();
 
-        StandardContext ctx = (StandardContext) tomcat.addWebapp("/", new File(webappDirLocation).getAbsolutePath());
-        System.out.println("configuring app with basedir: " + new File("./" + webappDirLocation).getAbsolutePath());
+        ServletRouter servletRouter = new ServletRouter();
+        servletRouter.setSecurityService(securityService);
 
-        File additionWebInfClasses = new File("target/classes");
-        WebResourceRoot resources = new StandardRoot(ctx);
-        resources.addPreResources(new DirResourceSet(resources, "/WEB-INF/classes",
-                additionWebInfClasses.getAbsolutePath(), "/"));
-        ctx.setResources(resources);
-
-        User admin = new User("admin", "pass");
-
-        tomcat.start();
-        tomcat.getServer().await();
+        Context ctx;
+        try {
+            ctx = tomcat.addWebapp("/", new File(docBase).getAbsolutePath());
+            servletRouter.init(ctx);
+            tomcat.start();
+            tomcat.getServer().await();
+        } catch (ServletException | LifecycleException ex) {
+            ex.printStackTrace();
+        }
     }
 }

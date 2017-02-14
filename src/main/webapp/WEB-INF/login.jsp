@@ -7,7 +7,8 @@
 
 <body>
 <h2>Login:</h2>
-<form method="post" action="login">
+<p>${error}</p>
+<form method="post" action="/login">
     <fieldset>
         <legend>Login</legend>
         Login:
@@ -18,9 +19,7 @@
             <input type="password" name="password"/>
         </label><br /><br />
     </fieldset>
-    <% %>
-    <!--<input type="hidden" name="secret" value="888" />-->
-    <input type="submit" value="SEND" />
+    <input type="submit" value="Submit" />
 </form>
 </body>
 </html>
