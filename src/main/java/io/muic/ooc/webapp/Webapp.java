@@ -26,7 +26,7 @@ public class Webapp {
 
         String docBase = "src/main/webapp/";
         Tomcat tomcat = new Tomcat();
-        tomcat.setPort(8080);
+        tomcat.setPort(80);
         SecurityService securityService = new SecurityService();
 
         ServletRouter servletRouter = new ServletRouter();
