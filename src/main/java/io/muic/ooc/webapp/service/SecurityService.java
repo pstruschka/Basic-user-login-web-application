@@ -1,33 +1,41 @@
 package io.muic.ooc.webapp.service;
 
-import org.apache.commons.lang.StringUtils;
+import io.muic.ooc.webapp.User;
+import io.muic.ooc.webapp.Webapp;
+import io.muic.ooc.webapp.util.Encryption;
+
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 
 public class SecurityService {
 
     private SecurityService securityService;
 
-    private Map<String, String> userCredentials = new HashMap<String, String>() {{
-        put("admin", "123456");
-        put("muic", "1111");
-    }};
-
     public boolean isAuthorized(HttpServletRequest request) {
-        String username = (String) request.getSession()
-                .getAttribute("username");
+        Webapp.mySQLConnection.getUsers();
+        Integer id = (Integer) request.getSession()
+                .getAttribute("session");
         // do checking
-        System.out.println("username:" + username);
-        return (username != null && userCredentials.containsKey(username));
+        return id != null && User.getUserMap().containsKey(id);
     }
 
     public boolean authenticate(String username, String password, HttpServletRequest request) {
-        String passwordInDB = userCredentials.get(username);
-        boolean isMatched = StringUtils.equals(password, passwordInDB);
+        Webapp.mySQLConnection.getUsers();
+        Integer id = Webapp.mySQLConnection.userExists(username);
+        String passwordInDB = Webapp.mySQLConnection.getUserPassword(username);
+        System.out.printf("password: " + passwordInDB);
+        boolean isMatched = false;
+        try {
+            if (id !=null && passwordInDB != null) {
+                isMatched = Encryption.validatePassword(password, passwordInDB);
+            }
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
         if (isMatched) {
-            request.getSession().setAttribute("username", username);
+            request.getSession().setAttribute("session", id);
             return true;
         } else {
             return false;
