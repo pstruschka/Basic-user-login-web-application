@@ -17,7 +17,7 @@
 <% HashMap<Integer, User> userHashMap = User.getUserMap(); %>
 <fieldset>
     <legend>USERS</legend>
-<table>
+<table border="1">
     <tr>
         <th>Username</th>
         <th>First Name</th>

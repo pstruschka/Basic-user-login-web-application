@@ -24,7 +24,7 @@ import org.apache.catalina.webresources.StandardRoot;
 public class Webapp {
 
     private static final String MYSQL_DRIVER = "com.mysql.jdbc.Driver";
-    private static final String MYSQL_URL = "jdbc:mysql://10.8.0.1/ooc?"
+    private static final String MYSQL_URL = "jdbc:mysql://127.0.0.1/ooc?"
             + "user=p&password=threat-bull-middle";
 
     public static MySQLConnection mySQLConnection = new MySQLConnection(MYSQL_DRIVER, MYSQL_URL);
@@ -34,7 +34,7 @@ public class Webapp {
 
         String docBase = "src/main/webapp/";
         Tomcat tomcat = new Tomcat();
-        tomcat.setPort(8080);
+        tomcat.setPort(80);
         SecurityService securityService = new SecurityService();
 
         ServletRouter servletRouter = new ServletRouter();
